@@ -356,6 +356,6 @@ A: 有两种方式：
 ## 🔗 相关链接
 
 - [Halo 官网](https://www.halo.run)
-- [Halo 插件开发文档](https://docs.halo.run/developer-guide/plugin)
+- [Halo 插件开发文档](https://docs.halo.run/category/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91)
 - [WebAuthn 规范](https://www.w3.org/TR/webauthn-2/)
 - [Passkeys.io](https://passkeys.io) - 了解更多关于 Passkey 的信息
