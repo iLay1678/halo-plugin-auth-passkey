@@ -1,0 +1,22 @@
+# Refer https://docs.halo.run/developer-guide/plugin/basics/manifest
+
+apiVersion: plugin.halo.run/v1alpha1
+kind: Plugin
+metadata:
+  # The name defines how the plugin is invoked, A unique name
+  name: auth-passkey
+spec:
+  enabled: true
+  requires: ">=2.22.0"
+  author:
+    name: ilay
+    website: https://github.com/ilay1678
+  logo: logo.png
+  homepage: https://github.com/ilay1678/halo-plugin-auth-passkey#readme
+  repo: https://github.com/ilay1678/halo-plugin-auth-passkey
+  issues: https://github.com/ilay1678/halo-plugin-auth-passkey/issues
+  displayName: "Passkey 认证"
+  description: "为 Halo 提供 Passkey (WebAuthn) 无密码认证支持，使用指纹、面部识别或设备 PIN 码进行安全登录"
+  license:
+    - name: "GPL-3.0"
+      url: "https://github.com/ilay1678/halo-plugin-auth-passkey/blob/main/LICENSE"

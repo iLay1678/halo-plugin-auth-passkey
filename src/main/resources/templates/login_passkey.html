@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"><head><meta charset="utf-8"></head><head></head><body>
+<div th:fragment="form">
+    <div class="form-item">
+        <button type="button" id="passkey-login-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style="vertical-align: middle; margin-right: 6px;">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"></path>
+            </svg>
+            使用通行密钥登录
+        </button>
+    </div>
+
+    <div id="passkey-error" class="alert alert-error" role="alert" style="display: none;"></div>
+    <div id="passkey-warn" class="alert" role="alert" style="display: none;">您的浏览器不支持通行密钥</div>
+
+    <style>
+        /* 隐藏表单默认的登录按钮和记住我选项 */
+        #login-form > .form-item:last-of-type,
+        #login-form > .form-item-compact {
+            display: none !important;
+        }
+        #passkey-login-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px;
+            font-size: 14px;
+            min-height: 44px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        (function() {
+            var API = '/apis/api.passkey.halo.run/v1alpha1';
+            var btn = document.getElementById('passkey-login-btn');
+            var errDiv = document.getElementById('passkey-error');
+            var warnDiv = document.getElementById('passkey-warn');
+            var origin = window.location.origin;
+
+            if (!window.PublicKeyCredential) {
+                warnDiv.style.display = 'block';
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                return;
+            }
+
+            function b64e(buf) {
+                var bytes = new Uint8Array(buf);
+                var s = '';
+                for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+                return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+            }
+
+            function b64d(str) {
+                var b = str.replace(/-/g, '+').replace(/_/g, '/');
+                b = b + '='.repeat((4 - b.length % 4) % 4);
+                var bin = atob(b);
+                var bytes = new Uint8Array(bin.length);
+                for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return bytes.buffer;
+            }
+
+            function showErr(msg) {
+                errDiv.textContent = msg;
+                errDiv.style.display = 'block';
+            }
+
+            btn.onclick = async function(e) {
+                e.preventDefault();
+                errDiv.style.display = 'none';
+                btn.disabled = true;
+                var originalHTML = btn.innerHTML;
+                btn.innerHTML = '<span>正在验证...</span>';
+
+                try {
+                    var res1 = await fetch(API + '/authentication/options', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ origin: origin }),
+                        credentials: 'include'
+                    });
+                    if (!res1.ok) {
+                        var err = await res1.json().catch(function() { return {}; });
+                        throw new Error(err.message || '无法获取认证选项');
+                    }
+                    var opts = await res1.json();
+
+                    var cred = await navigator.credentials.get({
+                        publicKey: {
+                            challenge: b64d(opts.challenge),
+                            rpId: opts.rpId,
+                            timeout: opts.timeout,
+                            userVerification: opts.userVerification,
+                            allowCredentials: opts.allowCredentials && opts.allowCredentials.length > 0
+                                ? opts.allowCredentials.map(function(id) { return {type: 'public-key', id: b64d(id)}; })
+                                : undefined
+                        }
+                    });
+
+                    if (!cred) throw new Error('认证已取消');
+
+                    var res2 = await fetch(API + '/authentication/verify', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            origin: origin,
+                            sessionId: opts.sessionId,
+                            credentialId: b64e(cred.rawId),
+                            authenticatorData: b64e(cred.response.authenticatorData),
+                            clientDataJSON: b64e(cred.response.clientDataJSON),
+                            signature: b64e(cred.response.signature),
+                            userHandle: cred.response.userHandle ? b64e(cred.response.userHandle) : null
+                        }),
+                        credentials: 'include'
+                    });
+
+                    if (!res2.ok) {
+                        var e = await res2.json().catch(function() { return {}; });
+                        throw new Error(e.message || '认证失败');
+                    }
+
+                    var params = new URLSearchParams(window.location.search);
+                    window.location.href = params.get('redirect_uri') || '/uc';
+                } catch (e) {
+                    if (e.name === 'NotAllowedError') showErr('认证已取消或被拒绝');
+                    else if (e.name === 'AbortError') showErr('操作已取消');
+                    else if (e.name === 'TimeoutError' || (e.message && e.message.includes('timed out'))) showErr('操作超时，请重试');
+                    else showErr(e.message || '认证失败');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                }
+            };
+        })();
+    </script>
+</div>
+
+
+</body></html>
