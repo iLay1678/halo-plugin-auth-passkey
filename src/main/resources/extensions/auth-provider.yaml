@@ -12,3 +12,4 @@ spec:
   authenticationUrl: /apis/api.passkey.halo.run/v1alpha1/authentication/verify
   method: POST
   authType: form
+  rememberMeSupport: true
