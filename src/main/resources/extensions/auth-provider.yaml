@@ -3,7 +3,7 @@ kind: AuthProvider
 metadata:
   name: passkey
   labels:
-    auth.halo.run/auth-binding: "true"
+    auth.halo.run/auth-binding: "false"
 spec:
   displayName: 通行密钥
   description: 使用通行密钥 (Passkey/WebAuthn) 进行无密码认证，支持指纹、面容或设备 PIN 码
