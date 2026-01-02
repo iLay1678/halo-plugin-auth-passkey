@@ -16,6 +16,8 @@ dependencies {
 
     // WebAuthn4J for Passkey/WebAuthn support
     implementation 'com.webauthn4j:webauthn4j-core:0.28.4.RELEASE'
+    // 显式添加 WebAuthn4J 的传递依赖
+    implementation 'com.webauthn4j:webauthn4j-util:0.28.4.RELEASE'
 
     testImplementation 'run.halo.app:api'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

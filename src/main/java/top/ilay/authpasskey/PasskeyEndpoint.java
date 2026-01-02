@@ -19,6 +19,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.endpoint.CustomEndpoint;
 import run.halo.app.extension.GroupVersion;
+import run.halo.app.security.LoginHandlerEnhancer;
 
 /**
  * Passkey API endpoints for WebAuthn registration and authentication.
@@ -35,6 +36,7 @@ public class PasskeyEndpoint implements CustomEndpoint {
     private final PasskeyCredentialService credentialService;
     private final ReactiveUserDetailsService userDetailsService;
     private final ServerSecurityContextRepository securityContextRepository;
+    private final LoginHandlerEnhancer loginHandlerEnhancer;
 
     @Override
     public RouterFunction<ServerResponse> endpoint() {
@@ -140,7 +142,9 @@ public class PasskeyEndpoint implements CustomEndpoint {
                         SecurityContext securityContext = new SecurityContextImpl(authentication);
                         // Save security context to establish session
                         return securityContextRepository.save(request.exchange(), securityContext)
-                            .then(Mono.just(credential));
+                            // Call login handler enhancer for remember-me, device management, etc.
+                            .then(loginHandlerEnhancer.onLoginSuccess(request.exchange(), authentication))
+                            .thenReturn(credential);
                     });
             })
             .flatMap(credential -> ServerResponse.ok()
