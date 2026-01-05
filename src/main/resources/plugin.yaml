@@ -5,6 +5,8 @@ kind: Plugin
 metadata:
   # The name defines how the plugin is invoked, A unique name
   name: auth-passkey
+  annotations:
+    store.halo.run/app-id: app-g7tggrco
 spec:
   enabled: true
   requires: ">=2.22.0"
