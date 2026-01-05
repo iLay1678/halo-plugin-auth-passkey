@@ -1,7 +1,7 @@
 # Passkey 认证插件
 
 <p align="center">
-  <img src="src/main/resources/logo.png" style="border-radius: 8px;" alt="Passkey Logo" width="120" height="120">
+  <img src="src/main/resources/logo.svg" style="border-radius: 8px;" alt="Passkey Logo" width="120" height="120">
 </p>
 
 <p align="center">

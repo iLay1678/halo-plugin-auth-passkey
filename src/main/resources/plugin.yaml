@@ -13,7 +13,7 @@ spec:
   author:
     name: ilay
     website: https://github.com/ilay1678
-  logo: logo.png
+  logo: logo.svg
   homepage: https://github.com/ilay1678/halo-plugin-auth-passkey#readme
   repo: https://github.com/ilay1678/halo-plugin-auth-passkey
   issues: https://github.com/ilay1678/halo-plugin-auth-passkey/issues
