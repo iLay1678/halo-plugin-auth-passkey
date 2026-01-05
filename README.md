@@ -1,7 +1,7 @@
 # Passkey 认证插件
 
 <p align="center">
-  <img src="src/main/resources/static/passkey.svg" alt="Passkey Logo" width="120" height="120">
+  <img src="src/main/resources/logo.png" style="border-radius: 8px;" alt="Passkey Logo" width="120" height="120">
 </p>
 
 <p align="center">
@@ -60,10 +60,10 @@ Passkey 是下一代无密码认证技术，基于 FIDO2/WebAuthn 标准。本�
 
 ## 📋 系统要求
 
-| 要求 | 版本 |
-|------|------|
-| Halo | 2.22.0+ |
-| Java | 21+ |
+| 要求   | 版本                                          |
+| ------ | --------------------------------------------- |
+| Halo   | 2.22.0+                                       |
+| Java   | 21+                                           |
 | 浏览器 | Chrome 67+、Firefox 60+、Safari 13+、Edge 79+ |
 
 > ⚠️ **注意**：Passkey 需要在 HTTPS 环境下使用（localhost 开发环境除外）

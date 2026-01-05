@@ -2,13 +2,23 @@
 import { computed, onMounted, ref } from 'vue'
 import { usePasskey } from '@/composables/usePasskey'
 import type { PasskeyCredential } from '@/types'
-import { VButton, VCard, VEmpty, VLoading, VModal, VSpace, Dialog, Toast } from '@halo-dev/components'
-import RiKey2Line from '~icons/ri/key-2-line'
+import {
+  VButton,
+  VCard,
+  VEmpty,
+  VLoading,
+  VModal,
+  VSpace,
+  Dialog,
+  Toast,
+  IconAddCircle,
+} from '@halo-dev/components'
 import RiDeleteBinLine from '~icons/ri/delete-bin-line'
 import RiEdit2Line from '~icons/ri/edit-2-line'
 import RiShieldKeyholeLine from '~icons/ri/shield-keyhole-line'
 import RiTimeLine from '~icons/ri/time-line'
 import RiCheckboxCircleLine from '~icons/ri/checkbox-circle-line'
+import MaterialSymbolsPasskeyRounded from '~icons/material-symbols/passkey-rounded'
 
 const {
   loading,
@@ -18,7 +28,7 @@ const {
   fetchCredentials,
   registerPasskey,
   deleteCredential,
-  updateCredentialName
+  updateCredentialName,
 } = usePasskey()
 
 const showRegisterModal = ref(false)
@@ -54,7 +64,9 @@ const handleDelete = (credential: PasskeyCredential) => {
       try {
         await deleteCredential(credential.metadata.name)
         // 手动从列表中移除
-        const index = credentials.value.findIndex(c => c.metadata.name === credential.metadata.name)
+        const index = credentials.value.findIndex(
+          (c) => c.metadata.name === credential.metadata.name,
+        )
         if (index > -1) {
           credentials.value.splice(index, 1)
         }
@@ -113,7 +125,8 @@ const getTransportLabel = (transport: string) => {
     <div v-if="!webAuthnSupported" class="passkey-list__warning">
       <VCard title="不支持 Passkey">
         <template #description>
-          您的浏览器不支持 WebAuthn/Passkey。请使用支持的现代浏览器（Chrome、Firefox、Safari、Edge）。
+          您的浏览器不支持
+          WebAuthn/Passkey。请使用支持的现代浏览器（Chrome、Firefox、Safari、Edge）。
         </template>
       </VCard>
     </div>
@@ -132,7 +145,7 @@ const getTransportLabel = (transport: string) => {
         </div>
         <VButton v-if="credentials.length > 0" type="secondary" @click="showRegisterModal = true">
           <template #icon>
-            <RiKey2Line />
+            <IconAddCircle />
           </template>
           添加 Passkey
         </VButton>
@@ -152,11 +165,15 @@ const getTransportLabel = (transport: string) => {
       </div>
 
       <!-- Empty State -->
-      <VEmpty v-else-if="!credentials.length" title="暂无 Passkey" message="添加一个 Passkey 来开启更安全的登录体验">
+      <VEmpty
+        v-else-if="!credentials.length"
+        title="暂无 Passkey"
+        message="添加一个 Passkey 来开启更安全的登录体验"
+      >
         <template #actions>
           <VButton type="primary" @click="showRegisterModal = true">
             <template #icon>
-              <RiKey2Line />
+              <IconAddCircle />
             </template>
             添加 Passkey
           </VButton>
@@ -165,9 +182,13 @@ const getTransportLabel = (transport: string) => {
 
       <!-- Credentials List -->
       <div v-else class="passkey-list__items">
-        <div v-for="credential in credentials" :key="credential.metadata.name" class="passkey-list__item">
+        <div
+          v-for="credential in credentials"
+          :key="credential.metadata.name"
+          class="passkey-list__item"
+        >
           <div class="passkey-list__item-icon">
-            <RiKey2Line />
+            <MaterialSymbolsPasskeyRounded />
           </div>
           <div class="passkey-list__item-content">
             <div class="passkey-list__item-name">
@@ -200,42 +221,58 @@ const getTransportLabel = (transport: string) => {
     </template>
 
     <!-- Register Modal -->
-    <VModal v-model:visible="showRegisterModal" title="添加 Passkey" :width="480" @close="registerDisplayName = ''">
+    <VModal
+      v-model:visible="showRegisterModal"
+      title="添加 Passkey"
+      :width="480"
+      @close="registerDisplayName = ''"
+    >
       <div class="passkey-register-modal">
         <p class="passkey-register-modal__description">
           为您的 Passkey 设置一个名称，以便于识别不同的设备或认证器。
         </p>
         <div class="passkey-register-modal__field">
           <label for="displayName">名称（可选）</label>
-          <input id="displayName" v-model="registerDisplayName" type="text" placeholder="例如：MacBook 指纹、iPhone 面容"
-            class="passkey-register-modal__input" />
+          <input
+            id="displayName"
+            v-model="registerDisplayName"
+            type="text"
+            placeholder="例如：MacBook 指纹、iPhone 面容"
+            class="passkey-register-modal__input"
+          />
         </div>
       </div>
       <template #footer>
         <VSpace>
           <VButton @click="showRegisterModal = false">取消</VButton>
-          <VButton type="secondary" :loading="loading" @click="handleRegister">
-            开始注册
-          </VButton>
+          <VButton type="secondary" :loading="loading" @click="handleRegister"> 开始注册 </VButton>
         </VSpace>
       </template>
     </VModal>
 
     <!-- Edit Modal -->
-    <VModal v-model:visible="showEditModal" title="编辑 Passkey" :width="480" @close="editingCredential = null">
+    <VModal
+      v-model:visible="showEditModal"
+      title="编辑 Passkey"
+      :width="480"
+      @close="editingCredential = null"
+    >
       <div class="passkey-register-modal">
         <div class="passkey-register-modal__field">
           <label for="editDisplayName">名称</label>
-          <input id="editDisplayName" v-model="editDisplayName" type="text" placeholder="输入 Passkey 名称"
-            class="passkey-register-modal__input" />
+          <input
+            id="editDisplayName"
+            v-model="editDisplayName"
+            type="text"
+            placeholder="输入 Passkey 名称"
+            class="passkey-register-modal__input"
+          />
         </div>
       </div>
       <template #footer>
         <VSpace>
           <VButton @click="showEditModal = false">取消</VButton>
-          <VButton type="secondary" :loading="loading" @click="handleSaveEdit">
-            保存
-          </VButton>
+          <VButton type="secondary" :loading="loading" @click="handleSaveEdit"> 保存 </VButton>
         </VSpace>
       </template>
     </VModal>
