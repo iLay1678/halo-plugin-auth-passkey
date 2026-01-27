@@ -9,7 +9,7 @@ metadata:
     store.halo.run/app-id: app-g7tggrco
 spec:
   enabled: true
-  requires: ">=2.22.0"
+  requires: ">=2.22.5"
   author:
     name: ilay
     website: https://github.com/ilay1678
