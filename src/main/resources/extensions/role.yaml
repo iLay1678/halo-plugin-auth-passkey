@@ -10,11 +10,25 @@ metadata:
     rbac.authorization.halo.run/module: "Authentication"
     rbac.authorization.halo.run/display-name: "Passkey Access"
 rules:
+  - apiGroups:
+      - "api.passkey.halo.run"
+    resources:
+      - "registration"
+      - "auth-passkey/registration"
+    verbs: ["create"]
+  - apiGroups:
+      - "api.passkey.halo.run"
+    resources:
+      - "credentials"
+      - "auth-passkey/credentials"
+    verbs: ["get", "list", "update", "delete"]
   - nonResourceURLs:
       - "/apis/api.passkey.halo.run/v1alpha1/registration/*"
+    verbs: ["create"]
+  - nonResourceURLs:
       - "/apis/api.passkey.halo.run/v1alpha1/credentials"
       - "/apis/api.passkey.halo.run/v1alpha1/credentials/*"
-    verbs: ["get", "list", "create", "update", "delete"]
+    verbs: ["get", "list", "update", "delete"]
 ---
 apiVersion: v1alpha1
 kind: Role
@@ -28,6 +42,12 @@ metadata:
     rbac.authorization.halo.run/module: "Authentication"
     rbac.authorization.halo.run/display-name: "Passkey Anonymous Access"
 rules:
+  - apiGroups:
+      - "api.passkey.halo.run"
+    resources:
+      - "authentication"
+      - "auth-passkey/authentication"
+    verbs: ["create"]
   - nonResourceURLs:
       - "/apis/api.passkey.halo.run/v1alpha1/authentication/*"
     verbs: ["create"]
