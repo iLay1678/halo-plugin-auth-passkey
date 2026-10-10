@@ -290,6 +290,8 @@ pnpm dev
 插件使用 Halo 2.26 的 ESM UI 构建，完整 UI 产物（包含 `ui-plugin.json`）随 JAR 打包。
 切换密码与通行密钥登录时，会保留 OIDC 回跳参数和“保持登录会话”的当前勾选状态。
 
+登录页的上下文脚本由 `PasskeyLoginContextWebFilter` 加载。Halo 会排除登录页的主题 Head 注入，因此这里仅处理 `GET /login` 的 HTML 响应，并兼容 Thymeleaf 的分块输出。
+
 ### 项目结构
 
 ```

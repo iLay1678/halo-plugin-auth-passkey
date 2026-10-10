@@ -21,7 +21,7 @@ function loginPage(search = '', checked = false) {
     <div id="passkey-warn" style="display: none"></div>
     <ul class="pill-items">
       <li><a id="passkey" href="/login?method=passkey"><span>通行密钥</span></a></li>
-      <li><a id="password" href="/login?method=password">密码</a></li>
+      <li><a id="password" href="/login?method=local">密码</a></li>
       <li><a id="external" href="https://example.org/login?method=passkey">外部链接</a></li>
     </ul>`,
     { url: 'https://halo.example/login' + search, runScripts: 'outside-only' },
@@ -54,7 +54,7 @@ describe('登录方式切换', () => {
     const redirect =
       '/oidc/authorize?client_id=demo&scope=openid+profile&state=a%2Bb%25%26' +
       '&nonce=中文&code_challenge=A+B%2F'
-    const params = new URLSearchParams({ redirect_uri: redirect, method: 'password' })
+    const params = new URLSearchParams({ redirect_uri: redirect, method: 'local' })
     params.append('custom', 'one')
     params.append('custom', 'two')
     const dom = loginPage('?' + params.toString())
@@ -86,7 +86,7 @@ describe('登录方式切换', () => {
 
     expect(rememberMe.checked).toBe(checked)
     const target = linkUrl(dom, 'password')
-    expect(target.searchParams.get('method')).toBe('password')
+    expect(target.searchParams.get('method')).toBe('local')
     expect(target.searchParams.get('remember-me')).toBe(String(checked))
     dom.window.close()
   })
