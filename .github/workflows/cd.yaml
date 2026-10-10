@@ -7,7 +7,7 @@ on:
 
 jobs:
   cd:
-    uses: halo-sigs/reusable-workflows/.github/workflows/plugin-cd.yaml@v3
+    uses: halo-sigs/reusable-workflows/.github/workflows/plugin-cd.yaml@v5
     secrets:
       halo-pat: ${{ secrets.HALO_PAT }}
     permissions:
@@ -19,4 +19,5 @@ jobs:
       java-version: 21
       # Remove skip-appstore-release and set app-id if you want to release to the App Store
       skip-appstore-release: false
+      sync-github-readme: true
       app-id: app-g7tggrco
