@@ -20,6 +20,16 @@ export interface PasskeyCredential {
   }
 }
 
+export interface CredentialInfo {
+  name: string
+  credentialId: string
+  displayName?: string
+  createdAt: string
+  lastUsedAt?: string
+  backedUp: boolean
+  transports?: string[]
+}
+
 export interface RegistrationOptions {
   challenge: string
   rp: {

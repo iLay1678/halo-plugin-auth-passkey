@@ -49,7 +49,7 @@ const handleRegister = async () => {
     Toast.success('Passkey 注册成功')
     showRegisterModal.value = false
     registerDisplayName.value = ''
-  } catch (e) {
+  } catch {
     Toast.error(error.value || '注册失败')
   }
 }
@@ -91,7 +91,7 @@ const handleSaveEdit = async () => {
     Toast.success('已更新名称')
     showEditModal.value = false
     editingCredential.value = null
-  } catch (e) {
+  } catch {
     Toast.error(error.value || '更新失败')
   }
 }

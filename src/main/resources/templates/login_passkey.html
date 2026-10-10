@@ -121,9 +121,7 @@
                             // 构建验证 URL，包含 remember-me 参数
                             var verifyUrl = API + "/authentication/verify";
                             var rememberMe = document.getElementById("remember-me");
-                            if (rememberMe && rememberMe.checked) {
-                                verifyUrl += "?remember-me=true";
-                            }
+                            verifyUrl += "?remember-me=" + Boolean(rememberMe && rememberMe.checked);
 
                             var res2 = await fetch(verifyUrl, {
                                 method: "POST",

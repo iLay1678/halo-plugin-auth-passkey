@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id "io.freefair.lombok" version "8.13"
-    id "run.halo.plugin.devtools" version "0.6.1"
+    id "io.freefair.lombok" version "9.2.0"
+    id "run.halo.plugin.devtools" version "0.8.0"
 }
 
 group 'top.ilay.authpasskey'
@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation platform('run.halo.tools.platform:plugin:2.22.5')
+    implementation platform('run.halo.tools.platform:plugin:2.26.0')
     compileOnly 'run.halo.app:api'
 
     // WebAuthn4J for Passkey/WebAuthn support
@@ -38,9 +38,9 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
     options.release = 21
 }
-tasks.register('processUiResources', Copy) {
+tasks.register('processUiResources', Sync) {
     from project(':ui').layout.buildDirectory.dir('dist')
-    into layout.buildDirectory.dir('resources/main/console')
+    into layout.buildDirectory.dir('resources/main/ui')
     dependsOn project(':ui').tasks.named('assemble')
     shouldRunAfter tasks.named('processResources')
 }
@@ -49,8 +49,16 @@ tasks.named('classes') {
     dependsOn tasks.named('processUiResources')
 }
 
+tasks.named('check') {
+    dependsOn project(':ui').tasks.named('check')
+}
+
+tasks.named('generatePluginComponentsIdx') {
+    notCompatibleWithConfigurationCache('This task invokes "Task.project" at execution time, which is not supported with configuration cache.')
+}
+
 halo {
-    version = '2.22'
+    version = '2.26.1'
     superAdminUsername = 'admin'
     superAdminPassword = 'admin'
     externalUrl = 'http://localhost:8090/'

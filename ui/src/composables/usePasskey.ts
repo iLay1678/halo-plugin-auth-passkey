@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import axios from 'axios'
-import type { PasskeyCredential, RegistrationOptions, AuthenticationOptions } from '@/types'
+import type { PasskeyCredential, CredentialInfo, RegistrationOptions, AuthenticationOptions } from '@/types'
 
 const apiClient = axios.create({
   baseURL: '/apis/api.passkey.halo.run/v1alpha1',
@@ -46,9 +46,9 @@ export function usePasskey() {
     loading.value = true
     error.value = null
     try {
-      const response = await apiClient.get<{ credentials: PasskeyCredential[] }>('/credentials')
+      const response = await apiClient.get<{ credentials: CredentialInfo[] }>('/credentials')
       // Map backend response to frontend format
-      credentials.value = (response.data.credentials || []).map((cred: any) => ({
+      credentials.value = (response.data.credentials || []).map((cred) => ({
         metadata: {
           name: cred.name,
           creationTimestamp: cred.createdAt,

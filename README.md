@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/ilay1678/halo-plugin-auth-passkey/releases"><img src="https://img.shields.io/github/v/release/ilay1678/halo-plugin-auth-passkey?style=flat-square" alt="Release"></a>
-  <a href="https://www.halo.run"><img src="https://img.shields.io/badge/Halo-2.22.0+-blue?style=flat-square" alt="Halo"></a>
+  <a href="https://www.halo.run"><img src="https://img.shields.io/badge/Halo-2.26.0+-blue?style=flat-square" alt="Halo"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/ilay1678/halo-plugin-auth-passkey?style=flat-square" alt="License"></a>
 </p>
 
@@ -62,7 +62,7 @@ Passkey 是下一代无密码认证技术，基于 FIDO2/WebAuthn 标准。本�
 
 | 要求   | 版本                                          |
 | ------ | --------------------------------------------- |
-| Halo   | 2.22.0+                                       |
+| Halo   | 2.26.0+                                       |
 | Java   | 21+                                           |
 | 浏览器 | Chrome 67+、Firefox 60+、Safari 13+、Edge 79+ |
 
@@ -249,8 +249,8 @@ DELETE /credentials/{name}
 ### 环境准备
 
 - JDK 21+
-- Node.js 18+
-- pnpm 8+
+- Node.js 22.12.0+
+- pnpm 10.12.4（与 `ui/package.json` 一致）
 
 ### 克隆项目
 
@@ -286,6 +286,9 @@ pnpm dev
 ```
 
 构建完成后，插件 JAR 文件位于 `build/libs/` 目录。
+
+插件使用 Halo 2.26 的 ESM UI 构建，完整 UI 产物（包含 `ui-plugin.json`）随 JAR 打包。
+切换密码与通行密钥登录时，会保留 OIDC 回跳参数和“保持登录会话”的当前勾选状态。
 
 ### 项目结构
 
