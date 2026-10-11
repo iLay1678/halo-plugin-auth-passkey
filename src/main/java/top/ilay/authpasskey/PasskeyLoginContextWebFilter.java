@@ -22,8 +22,10 @@ import run.halo.app.security.AdditionalWebFilter;
 @Component
 public class PasskeyLoginContextWebFilter implements AdditionalWebFilter {
 
-    private static final String SCRIPT =
-        "<script src=\"/plugins/auth-passkey/assets/static/login-context.js\" defer></script>";
+    private static final String BODY_SCRIPT =
+        "<script src=\"/plugins/auth-passkey/assets/static/login-context.js?v=2.0.0\"></script>";
+    private static final String HEAD_SCRIPT =
+        "<script src=\"/plugins/auth-passkey/assets/static/login-context.js?v=2.0.0\" defer></script>";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -50,9 +52,14 @@ public class PasskeyLoginContextWebFilter implements AdditionalWebFilter {
                     } finally {
                         DataBufferUtils.release(buffer);
                     }
-                    var headEnd = html.indexOf("</head>");
-                    if (headEnd >= 0) {
-                        html = html.substring(0, headEnd) + SCRIPT + html.substring(headEnd);
+                    var bodyEnd = html.indexOf("</body>");
+                    if (bodyEnd >= 0) {
+                        html = html.substring(0, bodyEnd) + BODY_SCRIPT + html.substring(bodyEnd);
+                    } else {
+                        var headEnd = html.indexOf("</head>");
+                        if (headEnd >= 0) {
+                            html = html.substring(0, headEnd) + HEAD_SCRIPT + html.substring(headEnd);
+                        }
                     }
                     getHeaders().remove(HttpHeaders.CONTENT_LENGTH);
                     return super.writeWith(Mono.just(bufferFactory().wrap(html.getBytes(charset))));

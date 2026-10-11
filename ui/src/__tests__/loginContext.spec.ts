@@ -6,12 +6,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 const resources = resolve(process.cwd(), '../src/main/resources')
 const contextScript = readFileSync(resolve(resources, 'static/login-context.js'), 'utf8')
-const loginTemplate = readFileSync(resolve(resources, 'templates/login_passkey.html'), 'utf8')
-const passkeyScript = loginTemplate.match(
-  /<script th:inline="javascript">([\s\S]*?)<\/script>/,
-)?.[1]
-
-function loginPage(search = '', checked = false) {
+function loginPage(search = '', checked = false, runScript = true) {
   const dom = new JSDOM(
     `<form class="halo-form" id="login-form">
       <input type="checkbox" id="remember-me" ${checked ? 'checked' : ''}>
@@ -26,8 +21,10 @@ function loginPage(search = '', checked = false) {
     </ul>`,
     { url: 'https://halo.example/login' + search, runScripts: 'outside-only' },
   )
-  dom.window.eval(contextScript)
-  dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'))
+  if (runScript) {
+    dom.window.eval(contextScript)
+    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'))
+  }
   return dom
 }
 
@@ -107,12 +104,11 @@ describe('登录方式切换', () => {
 describe('通行密钥认证', () => {
   it.each([true, false])('验证请求显式携带 remember-me=%s 并返回原始授权地址', async (checked) => {
     const redirect = '/oidc/authorize?client_id=demo&state=a%2Bb&scope=openid+profile'
-    const dom = loginPage('?' + new URLSearchParams({ redirect_uri: redirect }).toString(), checked)
-    const location = {
-      origin: 'https://halo.example',
-      search: dom.window.location.search,
-      href: '',
-    }
+    const dom = loginPage(
+      '?' + new URLSearchParams({ redirect_uri: redirect }).toString(),
+      checked,
+      false,
+    )
     const fetch = vi
       .fn()
       .mockResolvedValueOnce({
@@ -129,22 +125,34 @@ describe('通行密钥认证', () => {
         userHandle: null,
       },
     })
-    expect(passkeyScript).toBeDefined()
-    runInNewContext(passkeyScript!, {
-      window: { location, PublicKeyCredential: function () {} },
+    const location = {
+      origin: 'https://halo.example',
+      search: dom.window.location.search,
+      href: 'https://halo.example/login' + dom.window.location.search,
+    }
+    runInNewContext(contextScript, {
+      window: {
+        location,
+        PublicKeyCredential: function () {},
+        addEventListener: vi.fn(),
+        URL,
+      },
       document: dom.window.document,
       navigator: { credentials: { get: getCredential } },
       fetch,
+      URL,
       URLSearchParams,
       Uint8Array,
       atob,
       btoa,
     })
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'))
-    const button = dom.window.document.querySelector('button')!
-    button.click()
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(1))
+    const link = dom.window.document.querySelector('#passkey') as HTMLAnchorElement
+    link.click()
 
     await vi.waitFor(() => expect(location.href).toBe(redirect))
+    expect(location.href).not.toContain('method=passkey')
     expect(fetch).toHaveBeenCalledTimes(2)
     expect(fetch.mock.calls[1][0]).toBe(
       '/apis/api.passkey.halo.run/v1alpha1/authentication/verify?remember-me=' + checked,

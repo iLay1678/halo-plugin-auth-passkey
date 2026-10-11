@@ -33,9 +33,9 @@ class PasskeyLoginContextWebFilterTest {
         }).block();
 
         assertThat(exchange.getResponse().getBodyAsString().block()).isEqualTo(
-            "<html><head><title>登录</title>"
-                + "<script src=\"/plugins/auth-passkey/assets/static/login-context.js\" defer></script>"
-                + "</head><body><form id=\"login-form\"></form></body></html>"
+            "<html><head><title>登录</title></head><body><form id=\"login-form\"></form>"
+                + "<script src=\"/plugins/auth-passkey/assets/static/login-context.js?v=2.0.0\"></script>"
+                + "</body></html>"
         );
         assertThat(exchange.getResponse().getHeaders().getContentLength()).isEqualTo(-1);
     }
@@ -43,8 +43,15 @@ class PasskeyLoginContextWebFilterTest {
     @Test
     void injectsScriptIntoPasskeyPage() {
         assertThat(render(HttpMethod.GET, "/login?method=passkey", MediaType.TEXT_HTML,
+            HttpStatus.OK, "<head></head><body></body>"))
+            .contains("<script src=\"/plugins/auth-passkey/assets/static/login-context.js?v=2.0.0\"></script></body>");
+    }
+
+    @Test
+    void fallsBackToHeadScriptWhenResponseHasNoBody() {
+        assertThat(render(HttpMethod.GET, "/login?method=passkey", MediaType.TEXT_HTML,
             HttpStatus.OK, "<head></head>"))
-            .contains("login-context.js\" defer></script></head>");
+            .contains("login-context.js?v=2.0.0\" defer></script></head>");
     }
 
     @Test
@@ -67,7 +74,7 @@ class PasskeyLoginContextWebFilterTest {
             .isEqualTo("<head></head>");
         assertThat(render(HttpMethod.GET, "/login", MediaType.TEXT_HTML,
             HttpStatus.OK, "<body>登录</body>"))
-            .isEqualTo("<body>登录</body>");
+            .isEqualTo("<body>登录<script src=\"/plugins/auth-passkey/assets/static/login-context.js?v=2.0.0\"></script></body>");
     }
 
     private String render(HttpMethod method, String path, MediaType contentType,
